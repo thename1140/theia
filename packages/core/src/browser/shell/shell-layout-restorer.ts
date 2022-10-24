@@ -123,12 +123,12 @@ export class ShellLayoutRestorer implements CommandContribution {
 
     @inject(ContributionProvider) @named(ApplicationShellLayoutMigration)
     protected readonly migrations: ContributionProvider<ApplicationShellLayoutMigration>;
+    @inject(LocalStorageService) protected readonly storage: LocalStorageService;
 
     constructor(
         @inject(WidgetManager) protected widgetManager: WidgetManager,
         @inject(ILogger) protected logger: ILogger,
-        @inject(StorageService) protected storageService: StorageService,
-        @inject(LocalStorageService) protected readonly storage: LocalStorageService) { }
+        @inject(StorageService) protected storageService: StorageService) { }
 
     registerCommands(commands: CommandRegistry): void {
         commands.registerCommand(RESET_LAYOUT, {
