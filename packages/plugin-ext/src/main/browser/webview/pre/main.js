@@ -474,6 +474,7 @@
                 }
 
                 const newFrame = document.createElement('iframe');
+                newFrame.setAttribute('allow', 'clipboard-read *; clipboard-write *');
                 newFrame.setAttribute('id', 'pending-frame');
                 newFrame.setAttribute('frameborder', '0');
                 newFrame.setAttribute('sandbox', options.allowScripts ? 'allow-scripts allow-forms allow-same-origin allow-downloads' : 'allow-same-origin');
