@@ -326,7 +326,7 @@ export class MiniBrowserContent extends BaseWidget {
 
     protected createIFrame(): HTMLIFrameElement {
         const frame = document.createElement('iframe');
-        frame.allow = 'clipboard-read *; clipbaord-write *';
+        frame.allow = 'clipboard-read *; clipboard-write *';
         const sandbox = (this.props.sandbox || MiniBrowserProps.SandboxOptions.DEFAULT).map(name => MiniBrowserProps.SandboxOptions[name]);
         frame.sandbox.add(...sandbox);
         this.toDispose.push(addEventListener(frame, 'load', this.onFrameLoad.bind(this)));
