@@ -90,8 +90,8 @@ export class MonacoCommandService implements ICommandService, Disposable {
                 let data = await this.storage.getData('storageTemp');
                 const clipboardData = await this.storage.getData('clipboardTemp');
                 const clipboardTempData = await this.clipboardService.readText();
-                if (clipboardData && clipboardTempData !== clipboardData) {
-                    data = clipboardData;
+                if (clipboardTempData && clipboardTempData !== clipboardData) {
+                    data = clipboardTempData;
                 }
                 const pasteMap = {'text': data };
                 await this.commandRegistry.executeCommand(commandId, pasteMap);
