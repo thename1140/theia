@@ -195,7 +195,7 @@ async function downloadPluginAsync(failures: string[], plugin: string, pluginUrl
             lastError = error;
             continue;
         }
-        const retry = response.status === 439 || response.status >= 500;
+        const retry = response.status === 439 || response.status >= 500 || response.status === 429;
         if (!retry) {
             break;
         }
