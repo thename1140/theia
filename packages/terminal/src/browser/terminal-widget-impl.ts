@@ -173,6 +173,13 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
             }
         }));
 
+        if (!this.enableContextMenu) {
+            document.addEventListener('contextmenu', e =>{
+                e.preventDefault();
+                this.messageSeervice.warn('Please use the keyboard shortcut.');
+            });
+        }
+
         this.toDispose.push(this.themeService.onDidChange(() => this.term.setOption('theme', this.themeService.theme)));
         this.attachCustomKeyEventHandler();
         const titleChangeListenerDispose = this.term.onTitleChange((title: string) => {
@@ -220,13 +227,6 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         this.onDispose(() => {
             document.removeEventListener('touchend', touchEndListener);
         });
-
-        if (!this.enableContextMenu) {
-            document.addEventListener('contextmenu', e =>{
-               e.preventDefault();
-               this.messageSeervice.warn('Please use the keyboard shortcut.');
-            });
-        }
 
         this.toDispose.push(this.term.onSelectionChange(() => {
             if (this.copyOnSelection) {

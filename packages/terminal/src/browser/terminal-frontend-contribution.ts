@@ -553,6 +553,7 @@ export class TerminalFrontendContribution implements TerminalService, CommandCon
             keybinding: 'ctrlcmd+k',
             context: TerminalKeybindingContexts.terminalActive
         });
+        console.log('x-webide-ext storage state >> ' + await this.storage.getData<boolean>('x-webide-ext'))
         if ( await this.storage.getData<boolean>('x-webide-ext')) {
             keybindings.registerKeybinding({
                 command: TerminalCommands.TERMINAL_PASTE.id,

@@ -168,6 +168,8 @@ export class ShellLayoutRestorer implements CommandContribution {
         } else {
             await this.storage.setData('x-webide-ext', false);
         }
+        console.log('x-webide-ext brower state >> ' + (await fetch(window.location.href, { method: 'GET' })).headers.has('x-webide-ext'));
+        console.log('x-webide-ext storage state >> ' + await this.storage.getData<boolean>('x-webide-ext'));
         if (serializedLayoutData === undefined) {
             this.logger.info('<<< Nothing to restore.');
             return false;
