@@ -54,10 +54,10 @@ export class FrontendGenerator extends AbstractGenerator {
 </head>
 <script>
 fetch(window.location.href, {method:'GET'}).then(res => {
-  if (res.headers.has('w-webide-ext')) {
+  if (res.headers.has('x-webide-ext')) {
       fetch('/api/v1/echo', { method: 'GET'}).then(res => {
           var userId = 'not_identified';
-          if (res.header('w-webide-echo')) {
+          if (res.header('x-webide-echo')) {
               var header = res.headers.get('x-webide-echo');
               if (header !== ''){
                   header = header.split('.')[1];
