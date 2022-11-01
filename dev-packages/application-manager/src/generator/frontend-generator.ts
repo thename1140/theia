@@ -57,7 +57,7 @@ fetch(window.location.href, {method:'GET'}).then(res => {
   if (res.headers.has('x-webide-ext')) {
       fetch('/api/v1/echo', { method: 'GET'}).then(res => {
           var userId = 'not_identified';
-          if (res.header('x-webide-echo')) {
+          if (res.headers.has('x-webide-echo')) {
               var header = res.headers.get('x-webide-echo');
               if (header !== ''){
                   header = header.split('.')[1];
@@ -88,7 +88,7 @@ fetch(window.location.href, {method:'GET'}).then(res => {
           var watermarkText = '';
           var n = 10000;
           for (var i = 0; i < n; i++) {
-              watermarkText += '' +userId;
+              watermarkText += ' ' +userId;
           }
           document.getElementById('watermarkId').innerHTML = watermarkText;
       });
