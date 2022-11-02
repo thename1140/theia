@@ -18,7 +18,7 @@ import { Terminal, RendererType } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { inject, injectable, named, postConstruct } from '@theia/core/shared/inversify';
 import { ContributionProvider, Disposable, Event, Emitter, ILogger, DisposableCollection } from '@theia/core';
-import { Widget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox, MessageLoop, KeyCode, codicon } from '@theia/core/lib/browser';
+import { Widget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox, MessageLoop, KeyCode, codicon, LocalStorageService } from '@theia/core/lib/browser';
 import { isOSX, MessageService } from '@theia/core/lib/common';
 import { WorkspaceService } from '@theia/workspace/lib/browser';
 import { ShellTerminalServerProxy, IShellTerminalPreferences } from '../common/shell-terminal-protocol';
@@ -78,6 +78,7 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
     @inject(TerminalThemeService) protected readonly themeService: TerminalThemeService;
     @inject(ShellCommandBuilder) protected readonly shellCommandBuilder: ShellCommandBuilder;
     @inject(MessageService) protected readonly messageSeervice: MessageService;
+    @inject(LocalStorageService) protected readonly storage: LocalStorageService;
 
     protected readonly onDidOpenEmitter = new Emitter<void>();
     readonly onDidOpen: Event<void> = this.onDidOpenEmitter.event;
@@ -173,12 +174,10 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
             }
         }));
 
-        if (!this.enableContextMenu) {
-            document.addEventListener('contextmenu', e =>{
-                e.preventDefault();
-                this.messageSeervice.warn('Please use the keyboard shortcut.');
-            });
-        }
+        document.addEventListener('contextmenu', e =>{
+            e.preventDefault();
+            this.messageSeervice.warn('Please use the keyboard shortcut.');
+        });
 
         this.toDispose.push(this.themeService.onDidChange(() => this.term.setOption('theme', this.themeService.theme)));
         this.attachCustomKeyEventHandler();
@@ -671,14 +670,15 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         };
     }
 
-    protected customKeyHandler(event: KeyboardEvent): boolean {
+    async customKeyHandler(event: KeyboardEvent): Promise<boolean> {
         const keyBindings = KeyCode.createKeyCode(event).toString();
         const ctrlCmdCopy = (isOSX && keyBindings === 'meta+c') || (!isOSX && keyBindings === 'ctrl+c');
         const ctrlCmdPaste = (isOSX && keyBindings === 'meta+v') || (!isOSX && keyBindings === 'ctrl+v');
-        if (ctrlCmdCopy && this.enableCopy && this.term.hasSelection()) {
+        const webideStatis = await this.storage.getData<boolean>('x-webide-ext');
+        if (ctrlCmdCopy && this.enableCopy && this.term.hasSelection() && !webideStatis) {
             return false;
         }
-        if (ctrlCmdPaste && this.enablePaste) {
+        if (ctrlCmdPaste && this.enablePaste && !webideStatis) {
             return false;
         }
         return true;
@@ -688,11 +688,8 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         return this.preferences['terminal.integrated.copyOnSelection'];
     }
 
-    protected get enableContextMenu(): boolean {
-        return this.preferences['terminal.enableContextMenu'];
-    }
-
     protected attachCustomKeyEventHandler(): void {
+        // @ts-ignore
         this.term.attachCustomKeyEventHandler(e => this.customKeyHandler(e));
     }
 
