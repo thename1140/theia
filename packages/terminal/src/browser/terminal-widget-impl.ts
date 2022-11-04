@@ -678,7 +678,7 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         };
     }
 
-    customKeyHandler(event: KeyboardEvent): boolean {
+    protected customKeyHandler(event: KeyboardEvent): boolean {
         const keyBindings = KeyCode.createKeyCode(event).toString();
         const ctrlCmdCopy = (isOSX && keyBindings === 'meta+c') || (!isOSX && keyBindings === 'ctrl+c');
         const ctrlCmdPaste = (isOSX && keyBindings === 'meta+v') || (!isOSX && keyBindings === 'ctrl+v');
@@ -697,7 +697,6 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
     }
 
     protected attachCustomKeyEventHandler(): void {
-        // @ts-ignore
         this.term.attachCustomKeyEventHandler(e => this.customKeyHandler(e));
     }
 
