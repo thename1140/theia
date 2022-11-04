@@ -174,11 +174,6 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
             }
         }));
 
-        document.addEventListener('contextmenu', e =>{
-            e.preventDefault();
-            this.messageSeervice.warn('Please use the keyboard shortcut.');
-        });
-
         this.toDispose.push(this.themeService.onDidChange(() => this.term.setOption('theme', this.themeService.theme)));
         this.attachCustomKeyEventHandler();
         const titleChangeListenerDispose = this.term.onTitleChange((title: string) => {
@@ -475,6 +470,13 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         }
 
         this.open();
+        const terminalContainer = document.getElementsByClassName('terminal-container');
+        for (let i=0; i< terminalContainer.length; i++) {
+            terminalContainer[i].addEventListener('contextmenu', e => {
+                e.preventDefault();
+                this.messageSeervice.warn('Please use the keyboard shortcut.');
+            });
+        }
 
         if (this.needsResize) {
             this.resizeTerminal();
@@ -674,11 +676,12 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         const keyBindings = KeyCode.createKeyCode(event).toString();
         const ctrlCmdCopy = (isOSX && keyBindings === 'meta+c') || (!isOSX && keyBindings === 'ctrl+c');
         const ctrlCmdPaste = (isOSX && keyBindings === 'meta+v') || (!isOSX && keyBindings === 'ctrl+v');
-        const webideStatis = await this.storage.getData<boolean>('x-webide-ext');
-        if (ctrlCmdCopy && this.enableCopy && this.term.hasSelection() && !webideStatis) {
+        const webideStatus = await this.storage.getData<boolean>('x-webide-ext');
+        console.log('webideStatus > ' + webideStatus);
+        if (ctrlCmdCopy && this.enableCopy && this.term.hasSelection() && !webideStatus) {
             return false;
         }
-        if (ctrlCmdPaste && this.enablePaste && !webideStatis) {
+        if (ctrlCmdPaste && this.enablePaste && !webideStatus) {
             return false;
         }
         return true;

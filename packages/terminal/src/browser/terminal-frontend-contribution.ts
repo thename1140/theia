@@ -81,16 +81,6 @@ export namespace TerminalCommands {
         category: TERMINAL_CATEGORY,
         label: 'Clear Terminal'
     };
-    export  const TERMINAL_PASTE: Command = {
-        id: 'terminal:paste',
-        category: TERMINAL_CATEGORY,
-        label: 'Paste Text in Terminal'
-    };
-    export  const TERMINAL_COPY: Command = {
-        id: 'terminal:copy',
-        category: TERMINAL_CATEGORY,
-        label: 'Copy Text in Terminal'
-    };
     export const TERMINAL_CONTEXT: Command = {
         id: 'terminal:context',
         category: TERMINAL_CATEGORY,
@@ -170,8 +160,6 @@ export class TerminalFrontendContribution implements TerminalService, CommandCon
     protected readonly terminalWatcher: TerminalWatcher;
     @inject(StorageService)
     protected readonly storageService: StorageService;
-    @inject(LocalStorageService)
-    protected readonly storage: LocalStorageService;
 
     protected readonly onDidCreateTerminalEmitter = new Emitter<TerminalWidget>();
     readonly onDidCreateTerminal: Event<TerminalWidget> = this.onDidCreateTerminalEmitter.event;
@@ -321,28 +309,6 @@ export class TerminalFrontendContribution implements TerminalService, CommandCon
         commands.registerCommand(TerminalCommands.TERMINAL_CONTEXT, UriAwareCommandHandler.MonoSelect(this.selectionService, {
             execute: uri => this.openInTerminal(uri)
         }));
-        commands.registerCommand(TerminalCommands.TERMINAL_PASTE);
-        commands.registerHandler(TerminalCommands.TERMINAL_PASTE.id, {
-            isEnabled: () => this.shell.activeWidget instanceof TerminalWidget,
-            execute: async () => {
-                let storageTemp: string = await this.storage.getData<string>('storageTemp') || '';
-                const clipboardData = await this.storage.getData('clipboardTemp');
-                const clipboardTempData = await this.clipboardService.readText();
-                if (clipboardTempData && clipboardTempData !== clipboardData) {
-                    storageTemp = clipboardTempData;
-                }
-                (this.shell.activeWidget as TerminalWidget).write(storageTemp);
-            }
-        });
-        commands.registerCommand(TerminalCommands.TERMINAL_COPY);
-        commands.registerHandler(TerminalCommands.TERMINAL_COPY.id, {
-            isEnabled: () => this.shell.activeWidget instanceof TerminalWidget,
-            execute: async () => {
-                const clipboardTempData = await this.clipboardService.readText();
-                await this.storage.setData('clipboardTempData', clipboardTempData);
-                await this.storage.setData('storageTemp', (this.shell.activeWidget as TerminalWidget).selectRead());
-            }
-        });
         commands.registerCommand(TerminalCommands.TERMINAL_FIND_TEXT);
         commands.registerHandler(TerminalCommands.TERMINAL_FIND_TEXT.id, {
             isEnabled: () => {
@@ -553,18 +519,6 @@ export class TerminalFrontendContribution implements TerminalService, CommandCon
             keybinding: 'ctrlcmd+k',
             context: TerminalKeybindingContexts.terminalActive
         });
-        if ( await this.storage.getData<boolean>('x-webide-ext')) {
-            keybindings.registerKeybinding({
-                command: TerminalCommands.TERMINAL_PASTE.id,
-                keybinding: 'ctrlcmd+v',
-                context: TerminalKeybindingContexts.terminalActive
-            });
-            keybindings.registerKeybinding({
-                command: TerminalCommands.TERMINAL_COPY.id,
-                keybinding: 'ctrlcmd+c',
-                context: TerminalKeybindingContexts.terminalActive
-            });
-        }
         keybindings.registerKeybinding({
             command: TerminalCommands.TERMINAL_FIND_TEXT.id,
             keybinding: 'ctrlcmd+f',
