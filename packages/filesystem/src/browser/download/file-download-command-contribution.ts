@@ -23,7 +23,7 @@ import { Command, CommandContribution, CommandRegistry } from '@theia/core/lib/c
 import { UriAwareCommandHandler } from '@theia/core/lib/common/uri-command-handler';
 import { FileDownloadService } from './file-download-service';
 import { MessageService } from '@theia/core/lib/common/message-service';
-import { LocalStorageService } from '@theia/core/lib/brower/storage-service'
+import { LocalStorageService } from '@theia/core/lib/browser/storage-service'
 
 @injectable()
 export class FileDownloadCommandContribution implements CommandContribution {
