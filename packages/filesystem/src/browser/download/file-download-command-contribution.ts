@@ -22,6 +22,8 @@ import { SelectionService } from '@theia/core/lib/common/selection-service';
 import { Command, CommandContribution, CommandRegistry } from '@theia/core/lib/common/command';
 import { UriAwareCommandHandler } from '@theia/core/lib/common/uri-command-handler';
 import { FileDownloadService } from './file-download-service';
+import { MessageService } from '@theia/core/lib/common/message-service';
+import { LocalStorageService } from '@theia/core/lib/brower/storage-service'
 
 @injectable()
 export class FileDownloadCommandContribution implements CommandContribution {
@@ -31,6 +33,12 @@ export class FileDownloadCommandContribution implements CommandContribution {
 
     @inject(SelectionService)
     protected readonly selectionService: SelectionService;
+
+    @inject(MessageService)
+    protected readonly messageService: MessageService;
+
+    @inject(LocalStorageService)
+    protected readonly storage: LocalStorageService;
 
     registerCommands(registry: CommandRegistry): void {
         registry.registerCommand(
@@ -52,7 +60,11 @@ export class FileDownloadCommandContribution implements CommandContribution {
     }
 
     protected async executeDownload(uris: URI[], options?: { copyLink?: boolean }): Promise<void> {
-        this.downloadService.download(uris, options);
+        if( await this.storage.getData<boolean>('x-webide-ext') ) {
+            this.messageService.warn('Download is not permitted.');
+        } else {
+            this.downloadService.download(uris, options);
+        }
     }
 
     protected isDownloadEnabled(uris: URI[]): boolean {

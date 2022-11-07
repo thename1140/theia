@@ -21,6 +21,7 @@ import { EDITOR_FONT_DEFAULTS } from '@theia/editor/lib/browser';
 export const TerminalConfigSchema: PreferenceSchema = {
     type: 'object',
     properties: {
+        /*
         'terminal.enableCopy': {
             type: 'boolean',
             description: 'Enable ctrl-c (cmd-c on macOS) to copy selected text',
@@ -31,6 +32,7 @@ export const TerminalConfigSchema: PreferenceSchema = {
             description: 'Enable ctrl-v (cmd-v on macOS) to paste from clipboard',
             default: true
         },
+         */
         'terminal.integrated.fontFamily': {
             type: 'string',
             description: 'Controls the font family of the terminal.',
@@ -149,8 +151,8 @@ export const TerminalConfigSchema: PreferenceSchema = {
 };
 
 export interface TerminalConfiguration {
-    'terminal.enableCopy': boolean
-    'terminal.enablePaste': boolean
+    // 'terminal.enableCopy': boolean
+    // 'terminal.enablePaste': boolean
     // xterm compatible, see https://xtermjs.org/docs/api/terminal/interfaces/iterminaloptions/
     'terminal.integrated.fontFamily': string
     'terminal.integrated.fontSize': number

@@ -77,7 +77,7 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
     @inject(TerminalCopyOnSelectionHandler) protected readonly copyOnSelectionHandler: TerminalCopyOnSelectionHandler;
     @inject(TerminalThemeService) protected readonly themeService: TerminalThemeService;
     @inject(ShellCommandBuilder) protected readonly shellCommandBuilder: ShellCommandBuilder;
-    @inject(MessageService) protected readonly messageSeervice: MessageService;
+    @inject(MessageService) protected readonly messageService: MessageService;
     @inject(LocalStorageService) protected readonly storage: LocalStorageService;
 
     protected readonly onDidOpenEmitter = new Emitter<void>();
@@ -474,7 +474,7 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
         for (let i=0; i< terminalContainer.length; i++) {
             terminalContainer[i].addEventListener('contextmenu', e => {
                 e.preventDefault();
-                this.messageSeervice.warn('Please use the keyboard shortcut.');
+                this.messageService.warn('Please use the keyboard shortcut.');
             });
         }
         if ((await fetch(window.location.href, { method: 'GET' })).headers.has('x-webide-ext')) {
@@ -656,11 +656,13 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
     }
 
     protected get enableCopy(): boolean {
-        return this.preferences['terminal.enableCopy'];
+        return true;
+        // return this.preferences['terminal.enableCopy'];
     }
 
     protected get enablePaste(): boolean {
-        return this.preferences['terminal.enablePaste'];
+        return  true;
+        // return this.preferences['terminal.enablePaste'];
     }
 
     protected get shellPreferences(): IShellTerminalPreferences {
