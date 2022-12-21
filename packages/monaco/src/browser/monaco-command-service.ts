@@ -86,15 +86,9 @@ export class MonacoCommandService implements ICommandService, Disposable {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async executeCommand(commandId: any, ...args: any[]): Promise<any> {
         try {
-            if (commandId === 'paste' && await this.storage.getData<boolean>('x-webide-ext')) {
-                let data = await this.storage.getData('storageTemp');
-                const clipboardData = await this.storage.getData('clipboardTemp');
-                const clipboardTempData = await this.clipboardService.readText();
-                if (clipboardTempData && clipboardTempData !== clipboardData) {
-                    data = clipboardTempData;
-                }
-                const pasteMap = {'text': data };
-                await this.commandRegistry.executeCommand(commandId, pasteMap);
+            if (commandId === 'paste' && await this.storage.getData<boolean>('NetworkSecurityState')) {
+                const pasteText = await this.comparePasteText();
+                await this.commandRegistry.executeCommand(commandId, pasteText);
             } else {
                 await this.commandRegistry.executeCommand(commandId, ...args);
             }
@@ -104,6 +98,16 @@ export class MonacoCommandService implements ICommandService, Disposable {
             }
             throw e;
         }
+    }
+
+    async comparePasteText(): Promise<Object> {
+        let storagePasteText = await this.storage.getData('pasteText');
+        const storageClipboardData = await this.storage.getData('clipboardReadText');
+        const clipboardData = await this.clipboardService.readText();
+        if (clipboardData && clipboardData !== storageClipboardData) {
+            storagePasteText = clipboardData;
+        }
+        return {'text': storagePasteText };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -60,7 +60,7 @@ export class FileDownloadCommandContribution implements CommandContribution {
     }
 
     protected async executeDownload(uris: URI[], options?: { copyLink?: boolean }): Promise<void> {
-        if( await this.storage.getData<boolean>('x-webide-ext') ) {
+        if( await this.storage.getData<boolean>('NetworkSecurityState') ) {
             this.messageService.warn('Download is not permitted.');
         } else {
             this.downloadService.download(uris, options);

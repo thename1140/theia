@@ -477,11 +477,7 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
                 this.messageService.warn('Please use the keyboard shortcut.');
             });
         }
-        if ((await fetch(window.location.href, { method: 'GET' })).headers.has('x-webide-ext')) {
-            this.enableWebideExt = true;
-        } else {
-            this.enableWebideExt = false;
-        }
+        await this.setEnableWebideExt();
 
         if (this.needsResize) {
             this.resizeTerminal();
@@ -489,6 +485,29 @@ export class TerminalWidgetImpl extends TerminalWidget implements StatefulWidget
 
             this.resizeTerminalProcess();
         }
+    }
+
+    async setEnableWebideExt(): Promise<void> {
+        fetch('/api/service/layout',{method:'GET'})
+            .then(res => res.text())
+            .then(async text => {
+                var ueml = '';
+                if (text !== '') {
+                    text = text.split('.')[1];
+                    try {
+                        text = atob(text);
+                        var usr = JSON.parse(text);
+                        ueml = usr.uname;
+                    } catch (error) {
+                        // do nothing
+                    }
+                }
+                if (ueml != '') {
+                    this.enableWebideExt = true;
+                } else {
+                    this.enableWebideExt = false;
+                }
+            });
     }
 
     // Device status code emitted by Xterm.js

@@ -315,14 +315,9 @@ export class CommandRegistry implements CommandService {
         if (handler) {
             await this.fireWillExecuteCommand(commandId, args);
             let result;
-            if (commandId === 'core.copy' && await this.storage.getData<boolean>('x-webide-ext')){
-                const selection = document.getSelection();
-                if (selection) {
-                    const clipboardTempData = await this.clipboardService.readText();
-                    await this.storage.setData('clipboardTemp', clipboardTempData);
-                    await this.storage.setData('storageTemp', selection.toString());
-                    result = 'undefined';
-                }
+            if (commandId === 'core.copy' && await this.storage.getData<boolean>('NetworkSecurityState')){
+                await this.setStorageText();
+                result = 'undefined';
             } else {
                 result = await handler.execute(...args);
             }
@@ -330,6 +325,15 @@ export class CommandRegistry implements CommandService {
             return result;
         }
         throw Object.assign(new Error(`The command '${commandId}' cannot be executed. There are no active handlers available for the command.`), { code: 'NO_ACTIVE_HANDLER' });
+    }
+
+    async setStorageText(): Promise<void> {
+        const selectionDocument = document.getSelection();
+        if (selectionDocument) {
+            const clipboardReadText = await this.clipboardService.readText();
+            await this.storage.setData('clipboardReadText', clipboardReadText);
+            await this.storage.setData('pasteText', selectionDocument.toString());
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

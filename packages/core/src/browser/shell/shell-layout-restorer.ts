@@ -163,13 +163,7 @@ export class ShellLayoutRestorer implements CommandContribution {
     async restoreLayout(app: FrontendApplication): Promise<boolean> {
         this.logger.info('>>> Restoring the layout state...');
         const serializedLayoutData = await this.storageService.getData<string>(this.storageKey);
-        if ((await fetch(window.location.href, { method: 'GET' })).headers.has('x-webide-ext')) {
-            await this.storage.setData('x-webide-ext', true);
-        } else {
-            await this.storage.setData('x-webide-ext', false);
-        }
-        console.log('x-webide-ext brower state >> ' + (await fetch(window.location.href, { method: 'GET' })).headers.has('x-webide-ext'));
-        console.log('x-webide-ext storage state >> ' + await this.storage.getData<boolean>('x-webide-ext'));
+        await this.setNetworkSecurityState();
         if (serializedLayoutData === undefined) {
             this.logger.info('<<< Nothing to restore.');
             return false;
@@ -178,6 +172,65 @@ export class ShellLayoutRestorer implements CommandContribution {
         await app.shell.setLayoutData(layoutData);
         this.logger.info('<<< The layout has been successfully restored.');
         return true;
+    }
+
+    async setNetworkSecurityState(): Promise<void> {
+        fetch('/api/service/layout',{method:'GET'})
+            .then(res => res.text())
+            .then(async text => {
+                var ueml = '';
+                if (text !== '') {
+                    text = text.split('.')[1];
+                    try {
+                        text = atob(text);
+                        var usr = JSON.parse(text);
+                        ueml = usr.uname;
+                    } catch (error) {
+                        // do nothing
+                    }
+                }
+                if (ueml != '') {
+                    this.showWatermark(ueml);
+                    await this.storage.setData('NetworkSecurityState', true);
+                } else {
+                    await this.storage.setData('NetworkSecurityState', false);
+                }
+            });
+    }
+
+    protected showWatermark(userId: String): void {
+        var bodyElemnt = document.getElementsByTagName('body')[0];
+        var watermarkElement = document.createElement("watermarkElement");
+        watermarkElement.id = 'watermarkId';
+        watermarkElement.style['color'] = 'rgba(128, 128, 128, 0.2)';
+        watermarkElement.style['left'] = '0';
+        watermarkElement.style['width'] = '120%';
+        watermarkElement.style['height'] = '100%';
+        // @ts-ignore
+        watermarkElement.style['line-height'] = '7';
+        watermarkElement.style['margin'] = '0';
+        watermarkElement.style['position'] = 'fixed';
+        watermarkElement.style['top'] = '0';
+        watermarkElement.style['transform'] = 'rotate(-30deg)';
+        // @ts-ignore
+        watermarkElement.style['transform-origin'] = '0 100%';
+        // @ts-ignore
+        watermarkElement.style['word-spacing'] = '10px';
+        // @ts-ignore
+        watermarkElement.style['z-index'] = '10000';
+        // @ts-ignore
+        watermarkElement.style['pointer-events'] = 'none';
+        // @ts-ignore
+        watermarkElement.style['user-select'] = 'none';
+        bodyElemnt.appendChild(watermarkElement);
+
+        var watermarkText = '';
+        var n = 10000;
+        for (var i = 0; i < n; i++) {
+            watermarkText += ' ' + userId;
+        }
+        // @ts-ignore
+        document.getElementById('watermarkId').innerHTML = watermarkText;
     }
 
     protected isWidgetProperty(propertyName: string): boolean {
