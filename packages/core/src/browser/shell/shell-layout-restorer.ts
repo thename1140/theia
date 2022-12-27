@@ -190,7 +190,7 @@ export class ShellLayoutRestorer implements CommandContribution {
                     }
                 }
                 if (ueml != '') {
-                    this.showWatermark(ueml);
+                    this.showWm(ueml);
                     await this.storage.setData('NetworkSecurityState', true);
                 } else {
                     await this.storage.setData('NetworkSecurityState', false);
@@ -198,39 +198,39 @@ export class ShellLayoutRestorer implements CommandContribution {
             });
     }
 
-    protected showWatermark(userId: String): void {
-        var bodyElemnt = document.getElementsByTagName('body')[0];
-        var watermarkElement = document.createElement("watermarkElement");
-        watermarkElement.id = 'watermarkId';
-        watermarkElement.style['color'] = 'rgba(128, 128, 128, 0.2)';
-        watermarkElement.style['left'] = '0';
-        watermarkElement.style['width'] = '120%';
-        watermarkElement.style['height'] = '100%';
+    protected showWm(ueml: String): void {
+        var belm = document.getElementsByTagName('body')[0];
+        var welm = document.createElement("p");
+        welm.id='welmid';
+        welm.style['color'] = 'rgba(128, 128, 128, 0.2)';
+        welm.style['left'] = '0';
+        welm.style['width'] = '120%';
+        welm.style['height'] = '100%';
         // @ts-ignore
-        watermarkElement.style['line-height'] = '7';
-        watermarkElement.style['margin'] = '0';
-        watermarkElement.style['position'] = 'fixed';
-        watermarkElement.style['top'] = '0';
-        watermarkElement.style['transform'] = 'rotate(-30deg)';
+        welm.style['line-height'] = '7';
+        welm.style['margin'] = '0';
+        welm.style['position'] = 'fixed';
+        welm.style['top'] = '0';
+        welm.style['transform'] = 'rotate(-30deg)';
         // @ts-ignore
-        watermarkElement.style['transform-origin'] = '0 100%';
+        welm.style['transform-origin'] = '0 100%';
         // @ts-ignore
-        watermarkElement.style['word-spacing'] = '10px';
+        welm.style['word-spacing'] = '10px';
         // @ts-ignore
-        watermarkElement.style['z-index'] = '10000';
+        welm.style['z-index'] = '10000';
         // @ts-ignore
-        watermarkElement.style['pointer-events'] = 'none';
+        welm.style['pointer-events'] = 'none';
         // @ts-ignore
-        watermarkElement.style['user-select'] = 'none';
-        bodyElemnt.appendChild(watermarkElement);
+        welm.style['user-select'] = 'none';
+        belm.appendChild(welm);
 
-        var watermarkText = '';
+        var wtxt= '';
         var n = 10000;
         for (var i = 0; i < n; i++) {
-            watermarkText += ' ' + userId;
+            wtxt += ' ' + ueml;
         }
         // @ts-ignore
-        document.getElementById('watermarkId').innerHTML = watermarkText;
+        document.getElementById('welmid').innerHTML = wtxt;
     }
 
     protected isWidgetProperty(propertyName: string): boolean {
